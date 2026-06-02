@@ -1,0 +1,23 @@
+# Core LangChain Ecosystem (Flexible to allow uv to resolve dependencies)
+langchain>=0.3.0
+langchain-core>=0.3.15
+langchain-community>=0.3.0
+langchain-text-splitters>=0.3.0
+
+# LLM Providers & Integrations
+langchain-mistralai==1.1.4
+langchain-huggingface>=0.1.2
+
+# Vector Database (ChromaDB)
+chromadb==0.5.15
+langchain-chroma>=0.1.4
+
+# Local Embedding Models (Hugging Face)
+sentence-transformers==3.3.1
+torch==2.5.1
+
+# Document Loaders & Utilities
+pypdf==5.1.0
+beautifulsoup4==4.12.3
+python-dotenv==1.2.2
+tiktoken==0.13.0
