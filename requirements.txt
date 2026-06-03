@@ -21,3 +21,4 @@ pypdf==5.1.0
 beautifulsoup4==4.12.3
 python-dotenv==1.2.2
 tiktoken==0.13.0
+streamlit
