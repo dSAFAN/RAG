@@ -1,36 +1,63 @@
 from langchain_mistralai.chat_models import ChatMistralAI
-from langchain_community.document_loaders import TextLoader,PyPDFLoader
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_community.document_loaders import WebBaseLoader
+from langchain_community.vectorstores import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
 from dotenv import load_dotenv
 load_dotenv()
 
+# Embedding Model
+embedding = HuggingFaceEmbeddings(model_name = "sentence-transformers/all-MiniLM-L6-v2")
+
+# Load DB
+vectorstore = Chroma(
+    persist_directory = "chromaDB",
+    embedding_function = embedding
+)
+
+# Retriever Creation - MMR
+retriever = vectorstore.as_retriever(
+    search_type = "mmr",
+    search_kwargs = {"k" : 4,
+                     "fetch_k" : 10,
+                     "lambda_mult" : 0.5}
+)
+
+
+# Model instantiate
 llm = ChatMistralAI(model = "mistral-small-2603")
 
-'''
-text_data = TextLoader("document_loaders/Prerequisite.txt")
-docs_txt = text_data.load()
-
-pdf_data = PyPDFLoader("document_loaders/case_study_2327114.pdf")
-docs_pdf = pdf_data.load()
-
-
+# Prompt Template 
 template = ChatPromptTemplate.from_messages(
-    [("system","You are an AI Agent that summarizes text and rates the quality of the provided material"),
-     ("human","{data}")]
-)
-'''
-template = ChatPromptTemplate.from_messages(
-    [("system","You are an AI Agent that finds the best free rag tools with their functionalities"),
-     ("human","{data}")]
-)
+    [("system",
+      """ You are a Helpful AI Assistant.
+          Use ONLY the provided context to answer the question.
+          If the answer is not present in the context, say "I Could not find the answer in the document."
+      """),
+     ("human",
+      """ Context : {context}
+          Question : {question}
+      """)
+      ])
 
-url = "https://techsy.io/en/blog/best-rag-tools"
-web_data = WebBaseLoader(url)
+print("RAG System Created")
+print("Press 0 to exit")
 
-docs_web = web_data.load()
-final_prompt = template.format_messages(data = docs_web)
+while True:
+    query = input("You : ")
+    if query == "0":
+        break
+    
+    # Converting user question in embeddings and doing a mmr search in vector db
+    # returns similar chunks
+    docs = retriever.invoke(query)
 
+    # joining similar chunks for LLM Model
+    context = "\n\n".join(
+        [doc.page_content for doc in docs]
+    )
 
-response = llm.invoke(final_prompt)
-print(response.content)
+    final_prompt = template.invoke({"question" : query, "context" : context})
+
+    response = llm.invoke(final_prompt)
+
+    print(f"\n AI : {response.content}" )
