@@ -47,3 +47,6 @@ huggingface_cache/
 *.swp
 .DS_Store
 Thumbs.db
+
+*.txt
+*.pdf
