@@ -1,14 +1,49 @@
-# Security
-.env
+# ====================================================================
+# Vector Databases & Local Storage (ChromaDB)
+# ====================================================================
+# Protects against committing local vector indexes and binary database files
+chroma/
+chromadb/
+chroma_db/
+*.db
+*.sqlite3
+db/
 
-# Virtual Environments
+# ====================================================================
+# Secrets & Environment Variables
+# ====================================================================
+# Extremely crucial to prevent leaking your Mistral or Hugging Face API keys
+.env
+.env.local
+.env.secret
+
+# ====================================================================
+# Python & Virtual Environments
+# ====================================================================
 .venv/
 venv/
-env/
-
-# Python Cache
+ENV/
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
 
-# IDEs
+# ====================================================================
+# Local LLM & Embedding Model Caches
+# ====================================================================
+# Prevents committing heavy downloaded Hugging Face weights to Git
+.cache/
+huggingface_cache/
+.huggingface/
+
+# ====================================================================
+# IDEs and Operating System Artifacts
+# ====================================================================
 .vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+.DS_Store
+Thumbs.db
